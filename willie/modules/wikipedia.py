@@ -64,12 +64,12 @@ def mw_snippet(server, query):
 
 
 @commands('w', 'wiki', 'wik')
-@example('.w San Francisco')
+@example('%w San Francisco')
 def wikipedia(bot, trigger):
 
     #Set the global default lang. 'en' if not definded
     if not bot.config.has_option('wikipedia', 'default_lang'):
-        lang = 'en'
+        lang = 'es'
     else:
         lang = bot.config.wikipedia.default_lang
 
@@ -87,8 +87,9 @@ def wikipedia(bot, trigger):
             lang = customlang.group(2)
 
     if trigger.group(2) is None:
-        bot.reply("What do you want me to look up?")
+        bot.reply("¿Que deseas que busque?")
         return NOLIMIT
+
 
     query = trigger.group(2)
     args = re.search(r'^-([a-z]{2,12})\s(.*)', query)
@@ -97,16 +98,16 @@ def wikipedia(bot, trigger):
         query = args.group(2)
 
     if not query:
-        bot.reply('What do you want me to look up?')
+        bot.reply('¿Que deseas que busque?')
         return NOLIMIT
     server = lang + '.wikipedia.org'
     query = mw_search(server, query, 1)
     if not query:
-        bot.reply("I can't find any results for that.")
+        bot.reply("No he encontrado resultados para eso.")
         return NOLIMIT
     else:
         query = query[0]
     snippet = mw_snippet(server, query)
 
     query = query.replace(' ', '_')
-    bot.say('"%s" - http://%s.wikipedia.org/wiki/%s' % (snippet, lang, query))
+    bot.say('"%s" -> http://%s.wikipedia.org/wiki/%s' % (snippet, lang, query))

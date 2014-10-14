@@ -31,14 +31,14 @@ else:
 def c(bot, trigger):
     """Evaluate some calculation."""
     if not trigger.group(2):
-        return bot.reply("Nothing to calculate.")
+        return bot.reply("Añade como parámetro algo a calcular.")
     # Account for the silly non-Anglophones and their silly radix point.
     eqn = trigger.group(2).replace(',', '.')
     try:
         result = eval_equation(eqn)
         result = "{:.10g}".format(result)
     except ZeroDivisionError:
-        result = "Division by zero is not supported in this universe."
+        result = "La división por cero no existe en este universo."
     except Exception as e:
         result = "{error}: {msg}".format(
                 error=type(e), msg=e)
@@ -50,7 +50,7 @@ def c(bot, trigger):
 def py(bot, trigger):
     """Evaluate a Python expression."""
     if not trigger.group(2):
-        return bot.say("Need an expression to evaluate")
+        return bot.say("Se necesita una expresión para evaluar")
 
     query = trigger.group(2)
     uri = 'http://tumbolia.appspot.com/py/'
@@ -58,7 +58,7 @@ def py(bot, trigger):
     if answer:
         bot.say(answer)
     else:
-        bot.reply('Sorry, no result.')
+        bot.reply('Sin resultado correcto.')
 
 
 @commands('wa', 'wolfram')

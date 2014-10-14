@@ -71,7 +71,7 @@ def _find_geoip_db(bot):
         return '/usr/share/GeoIP'
     elif urlretrieve:
         bot.debug(__file__, 'Downloading GeoIP database', 'always')
-        bot.say('Downloading GeoIP database, please wait...')
+        bot.say('Descargando la base de datos de GeoIP, por favor espera...')
         geolite_city_url = 'http://geolite.maxmind.com/download/geoip/database/GeoLiteCity.dat.gz'
         geolite_ASN_url = 'http://download.maxmind.com/download/geoip/database/asnum/GeoIPASNum.dat.gz'
         geolite_city_filepath = os.path.join(bot.config.homedir, 'GeoLiteCity.dat.gz')
@@ -87,7 +87,7 @@ def _find_geoip_db(bot):
 
 @commands('iplookup', 'ip')
 @example('.ip 8.8.8.8',
-        r'[IP/Host Lookup] Hostname: google-public-dns-a.google.com | Location: United States | Region: CA | ISP: Google Inc.',
+        r'[IP/Host Lookup] Hostname: google-public-dns-a.google.com | Location: United States | ISP: Google Inc.',
         re=True, 
         ignore='Downloading GeoIP database, please wait...')
 def ip(bot, trigger):

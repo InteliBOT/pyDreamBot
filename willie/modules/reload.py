@@ -36,7 +36,7 @@ def f_reload(bot, trigger):
         return bot.reply('done')
 
     if name not in sys.modules:
-        return bot.reply('%s: not loaded, try the `load` command' % name)
+        return bot.reply('%s: no está cargado, intenta usar el comando `load`' % name)
 
     old_module = sys.modules[name]
 
@@ -74,7 +74,7 @@ def f_reload(bot, trigger):
     bot.register(vars(module))
     bot.bind_commands()
 
-    bot.reply('%r (version: %s)' % (module, modified))
+    bot.reply('%r (versión: %s)' % (module, modified))
 
 
 @willie.module.nickname_commands('update')

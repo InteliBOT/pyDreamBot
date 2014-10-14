@@ -244,7 +244,7 @@ def priority(value):
     return add_attribute
 
 
-def event(*event_list):
+def event(value):
     """Decorator. Equivalent to func.event = value.
 
     This is one of a number of events, such as 'JOIN', 'PART', 'QUIT', etc.
@@ -255,9 +255,7 @@ def event(*event_list):
 
     """
     def add_attribute(function):
-        if not hasattr(function, "event"):
-            function.event = []
-        function.event.extend(event_list)
+        function.event = value
         return function
     return add_attribute
 

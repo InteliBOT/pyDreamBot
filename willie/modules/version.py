@@ -38,27 +38,27 @@ def version(bot, trigger):
     release = willie.__version__
     sha = git_info()
     if not sha:
-        msg = 'Willie v. ' + release
+        msg = 'DreamBot ' + release
         if release[-4:] == '-git':
-            msg += ' at unknown commit.'
+            msg += ' en un commit desconocido.'
         bot.reply(msg)
         return
 
-    bot.reply("Willie v. {} at commit: {}".format(willie.__version__, sha))
+    bot.reply("DreamBot v. {} en commit: {}".format(willie.__version__, sha))
 
 
 @willie.module.rule('\x01VERSION\x01')
 @willie.module.rate(20)
 def ctcp_version(bot, trigger):
     bot.write(('NOTICE', trigger.nick),
-              '\x01VERSION Willie IRC Bot version %s\x01' % willie.__version__)
+              '\x01VERSION DreamBot IRC Bot version %s\x01' % willie.__version__)
 
 
 @willie.module.rule('\x01SOURCE\x01')
 @willie.module.rate(20)
 def ctcp_source(bot, trigger):
     bot.write(('NOTICE', trigger.nick),
-              '\x01SOURCE https://github.com/Embolalia/willie/\x01')
+              '\x01SOURCE https://github.com/inteliBOT/pyDreamBot/\x01')
 
 
 @willie.module.rule('\x01PING\s(.*)\x01')

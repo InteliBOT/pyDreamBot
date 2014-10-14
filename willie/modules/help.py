@@ -3,9 +3,8 @@
 help.py - Willie Help Module
 Copyright 2008, Sean B. Palmer, inamidst.com
 Copyright © 2013, Elad Alfassa, <elad@fedoraproject.org>
+Copyright 2014, Miguel Peláez, <miguel2706@outlook.com>
 Licensed under the Eiffel Forum License 2.
-
-http://willie.dftba.net
 """
 from __future__ import unicode_literals
 
@@ -21,14 +20,14 @@ def setup(bot=None):
         from willie.config import ConfigurationError
         raise ConfigurationError("Attribute threshold of section [help] must be a nonnegative integer")
 
-@rule('$nick' '(?i)(help|doc) +([A-Za-z]+)(?:\?+)?$')
+@rule('$nick' '(?i)(help|doc|ayuda) +([A-Za-z]+)(?:\?+)?$')
 @example('.help tell')
-@commands('help')
+@commands('help', 'ayuda')
 @priority('low')
 def help(bot, trigger):
-    """Shows a command's documentation, and possibly an example."""
+    """Muestra la documentación de un comando, e información adicional de este."""
     if not trigger.group(2):
-        bot.reply('Say .help <command> (for example .help c) to get help for a command, or .commands for a list of commands.')
+        bot.reply('Escribe %ayuda <comando> (por ejemplo %help ayuda) para obtener detalles de un comando, o %comandos para una lista de comandos.')
     else:
         name = trigger.group(2)
         name = name.lower()
@@ -41,7 +40,7 @@ def help(bot, trigger):
         if name in bot.doc:
             if len(bot.doc[name][0]) + (1 if bot.doc[name][1] else 0) > threshold:
                 if trigger.nick != trigger.sender: #don't say that if asked in private
-                    bot.reply('The documentation for this command is too long; I\'m sending it to you in a private message.')
+                    bot.reply('La documentación de ese comando es muy larga; Te lo envio en un mensaje privdo para no molestar a los usuarios.')
                 msgfun=lambda l: bot.msg(trigger.nick,l)
             else:
                 msgfun=bot.reply
@@ -50,26 +49,27 @@ def help(bot, trigger):
                 msgfun(line)
             if bot.doc[name][1]:
                 msgfun('e.g. ' + bot.doc[name][1])
+        else:
+            bot.reply('No se ha encontrado el comando introducido.')
 
-
-@commands('commands')
+@commands('commands', 'comandos')
 @priority('low')
 def commands(bot, trigger):
-    """Return a list of bot's commands"""
+    """Devuelve una lista de comandos"""
     names = ', '.join(sorted(iterkeys(bot.doc)))
     if not trigger.is_privmsg:
-        bot.reply("I am sending you a private message of all my commands!")
-    bot.msg(trigger.nick, 'Commands I recognise: ' + names + '.', max_messages=10)
-    bot.msg(trigger.nick, ("For help, do '%s: help example' where example is the " +
-                    "name of the command you want help for.") % bot.nick)
+        bot.reply("¡Te enviaré un mensaje privado con todos mis comandos!")
+    bot.msg(trigger.nick, 'Comandos que actualmente reconozco: ' + names + '.', max_messages=10)
+    bot.msg(trigger.nick, ("Para más ayuda, has '%s: help ejemplo' donde ejemplo es el " +
+                    "nombre del comando que buscas.") % bot.nick)
 
 
 @rule('$nick' r'(?i)help(?:[?!]+)?$')
 @priority('low')
 def help2(bot, trigger):
     response = (
-        'Hi, I\'m a bot. Say ".commands" to me in private for a list ' +
-        'of my commands, or see http://willie.dftba.net for more ' +
-        'general details. My owner is %s.'
+        'Hola! soy un bot. Escribe "%comandos" para obtener una lista de mis comandos, ' +
+        'o pide ayuda a algún usuario con conocimiento de mi funcionamiento ' +
+        'Detalles generales. Mi propietario es %s.'
     ) % bot.config.owner
     bot.reply(response)

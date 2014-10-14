@@ -502,15 +502,15 @@ class Willie(irc.Bot):
                 func.thread = True
 
             if not hasattr(func, 'event'):
-                func.event = ['PRIVMSG']
+                func.event = 'PRIVMSG'
             else:
-                if type(func.event) is not list:
-                    func.event = [func.event.upper()]
-                else:
-                    func.event = [event.upper() for event in func.event]
+                func.event = func.event.upper()
 
             if not hasattr(func, 'rate'):
-                func.rate = 0
+                if hasattr(func, 'commands'):
+                    func.rate = 0
+                else:
+                    func.rate = 0
 
             if hasattr(func, 'rule'):
                 rules = func.rule
@@ -787,7 +787,7 @@ class Willie(irc.Bot):
                         list_of_blocked_functions.append(function_name)
                         continue
 
-                    if event not in func.event:
+                    if event != func.event:
                         continue
                     if self.limit(origin, func):
                         continue

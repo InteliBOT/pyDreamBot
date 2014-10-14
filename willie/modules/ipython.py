@@ -21,7 +21,7 @@ if sys.version_info.major >= 3:
     sys.stderr = sys.__stderr__
 try:
     import IPython
-    if hasattr(IPython, 'terminal'):
+    if IPython.terminal:
         from IPython.terminal.embed import InteractiveShellEmbed
     else:
         from IPython.frontend.terminal.embed import InteractiveShellEmbed
@@ -41,7 +41,7 @@ def interactive_shell(bot, trigger):
     """
     global console
     if not trigger.admin:
-        bot.say('Only admins can start the interactive console')
+        bot.say('Solo un operador del bot puede ejecutar comandos interactivos')
         return
     if 'iconsole_running' in bot.memory and bot.memory['iconsole_running']:
         bot.say('Console already running')

@@ -7,15 +7,15 @@ About: http://willie.dftba.net
 from __future__ import unicode_literals
 
 import random
-from willie.module import rule, priority, thread
+from willie.module import rule, priority, thread, commands
 
 
 @rule(r'(?i)(hi|hello|hey) $nickname[ \t]*$')
 def hello(bot, trigger):
     if trigger.owner:
-        greeting = random.choice(('Fuck off,', 'Screw you,', 'Go away'))
+        greeting = random.choice(('No sé quien eres', 'No me has programado bien, error 404', 'Tu no me amas, me cambiaste por Trivial-Bot'))
     else:
-        greeting = random.choice(('Hi', 'Hey', 'Hello'))
+        greeting = random.choice(('Hola', 'Hey', 'Buenas'))
     punctuation = random.choice(('', '!'))
     bot.say(greeting + ' ' + trigger.nick + punctuation)
 
@@ -30,3 +30,7 @@ def rude(bot, trigger):
 @thread(False)
 def interjection(bot, trigger):
     bot.say(trigger.nick + '!')
+
+@commands('ping')
+def pong(bot, trigger):
+    bot.say(trigger.nick + ': pong?')
