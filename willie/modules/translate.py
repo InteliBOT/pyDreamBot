@@ -28,15 +28,17 @@ def configure(config):
     | research | True | Enable research mode (logging) for .mangle |
     | collect_mangle_lines | False | Collect mangle lines to allow .mangle the last message in the channel |
     """
-    if config.option('Configure mangle module', False):
+    if config.option('Enable bing', False):
         config.add_section('translate')
-        if config.option("Enable research mode"):
-            config.translate.research = True
-        if config.option("Collect mangle lines"):
-            config.translate.collect_mangle_lines = True
-
+            config.interactive_add('translate', 'bing_user', 'Bing Api user', 'bing')
+            config.interactive_add('translate', 'bing_pass', 'Bing Api password', 'cakeisalie')
 def translate_bing(text, in_lang, out_lang):
-    translator = Translator('intelibot99062713549', 'nkTv8Y/tUdudjUcQAUbRdTZiwsrPVkX9I53QIJCN57g=')
+    if not bot.config.has_option('translate', 'bing_user') or not bot.config.has_option('translate', 'bing_pass'):
+        return 'No se ha habilitado el uso de bing en este bot!'
+    else:
+        user = bot.config.translate.default_lang
+        password = bot.config.translate.bing_pass
+    translator = Translator(user, password)
     if in_lang == 'auto':
        return translator.translate(text, out_lang)
     else:
