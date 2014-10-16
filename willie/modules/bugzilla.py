@@ -49,7 +49,7 @@ def setup(bot):
        '(/show_bug.cgi\?\S*?)'
        '(id=\d+).*')
 def show_bug(bot, trigger, match=None):
-    """Show information about a Bugzilla bug."""
+    """Muestra información de un bug."""
     match = match or trigger
     domain = match.group(1)
     if not bot.config.has_section('bugzilla') or domain not in bot.config.bugzilla.get_list('domains'):
@@ -58,9 +58,9 @@ def show_bug(bot, trigger, match=None):
     data = web.get(url, dont_decode=True)
     bug = etree.fromstring(data).find('bug')
 
-    message = ('[BUGZILLA] %s | Product: %s | Component: %s | Version: %s | ' +
-               'Importance: %s |  Status: %s | Assigned to: %s | ' +
-               'Reported: %s | Modified: %s')
+    message = ('[BUGZILLA] %s | Producto: %s | Componente: %s | Versión: %s | ' +
+               'Importancia: %s |  Estado: %s | Asignado a: %s | ' +
+               'Reportado: %s | Modificado: %s')
 
     resolution = bug.find('resolution')
     if resolution is not None and resolution.text:

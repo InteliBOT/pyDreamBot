@@ -10,6 +10,7 @@ http://willie.dftba.net
 from __future__ import unicode_literals
 from willie import web
 from willie.module import rule, commands, priority, example
+from microsofttranslator import Translator
 import json
 import sys
 import random
@@ -34,6 +35,12 @@ def configure(config):
         if config.option("Collect mangle lines"):
             config.translate.collect_mangle_lines = True
 
+def translate_bing(text, in_lang, out_lang):
+    translator = Translator('intelibot99062713549', 'nkTv8Y/tUdudjUcQAUbRdTZiwsrPVkX9I53QIJCN57g=')
+    if in_lang == 'auto':
+       return translator.translate(text, out_lang)
+    else:
+       return translator.translate(text, out_lang, in_lang)
 
 def translate(text, in_lang='auto', out_lang='en'):
     raw = False
@@ -76,146 +83,45 @@ def translate(text, in_lang='auto', out_lang='en'):
 
     return ''.join(x[0] for x in data[0]), language
 
-
-@rule(u'$nickname[,:]\s+(?:([a-z]{2}) +)?(?:([a-z]{2}|en-raw) +)?["“](.+?)["”]\? *$')
-@example('$nickname: "mon chien"? or $nickname: fr "mon chien"?')
-@priority('low')
-def tr(bot, trigger):
-    """Translates a phrase, with an optional language hint."""
-    in_lang, out_lang, phrase = trigger.groups()
-
-    if (len(phrase) > 350) and (not trigger.admin):
-        return bot.reply('Phrase must be under 350 characters.')
-
-    in_lang = in_lang or 'auto'
-    out_lang = out_lang or 'en'
-
-    if in_lang != out_lang:
-        msg, in_lang = translate(phrase, in_lang, out_lang)
-        if sys.version_info.major < 3 and isinstance(msg, str):
-            msg = msg.decode('utf-8')
-        if msg:
-            msg = web.decode(msg)  # msg.replace('&#39;', "'")
-            msg = '"%s" (%s to %s, translate.google.com)' % (msg, in_lang, out_lang)
-        else:
-            msg = 'The %s to %s translation failed, sorry!' % (in_lang, out_lang)
-
-        bot.reply(msg)
-    else:
-        bot.reply('Language guessing failed, so try suggesting one!')
-
-
-@commands('translate', 'tr')
-@example('.tr :en :fr my dog', '"mon chien" (en to fr, translate.google.com)')
-@example('.tr היי', '"Hi" (iw to en, translate.google.com)')
-@example('.tr mon chien', '"my dog" (fr to en, translate.google.com)')
+@commands('translate', 'tr', 'traducir')
+@example('%tr :en :fr my dog', '"mon chien" (en-fr)')
+@example('%tr היי', '"Hi" (iw-en)')
+@example('%tr mon chien', '"my dog" (fr-en)')
 def tr2(bot, trigger):
-    """Translates a phrase, with an optional language hint."""
+    """Traduce un texto instantaneamente usando el traductor de Google"""
+    if not trigger.group(2):
+        return bot.reply('Para usar el traductor ingresa "%tr [idioma origen] [idioma destino] [texto a traducir]"')
     command = trigger.group(2)
 
-    def langcode(p):
-        return p.startswith(':') and (2 < len(p) < 10) and p[1:].isalpha()
-
-    args = ['auto', 'en']
-
-    for i in range(2):
-        if ' ' not in command:
-            break
-        prefix, cmd = command.split(' ', 1)
-        if langcode(prefix):
-            args[i] = prefix[1:]
-            command = cmd
-    phrase = command
+    args = command.split(' ')
+    phrase = ' '.join(args[2:])
 
     if (len(phrase) > 350) and (not trigger.admin):
-        return bot.reply('Phrase must be under 350 characters.')
+        return bot.reply('La frase debe ser menor a 350 caracteres')
 
-    src, dest = args
+    src = args[0]
+    dest = args[1]
     if src != dest:
         msg, src = translate(phrase, src, dest)
         if sys.version_info.major < 3 and isinstance(msg, str):
             msg = msg.decode('utf-8')
         if msg:
             msg = web.decode(msg)  # msg.replace('&#39;', "'")
-            msg = '"%s" (%s to %s, translate.google.com)' % (msg, src, dest)
+            msg = '%s' % msg
         else:
-            msg = 'The %s to %s translation failed, sorry!' % (src, dest)
+            msg = 'La traducción de %s a %s ha fallado, lo siento!' % (src, dest)
 
         bot.reply(msg)
     else:
-        bot.reply('Language guessing failed, so try suggesting one!')
+        bot.reply('La detección de idioma ha fallado, intenta sugerir uno!')
 
-
-def get_random_lang(long_list, short_list):
-    random_index = random.randint(0, len(long_list) - 1)
-    random_lang = long_list[random_index]
-    if random_lang not in short_list:
-        short_list.append(random_lang)
-    else:
-        return get_random_lang(long_list, short_list)
-    return short_list
-
-
-@commands('mangle', 'mangle2')
-def mangle(bot, trigger):
-    """Repeatedly translate the input until it makes absolutely no sense."""
-    global mangle_lines
-    long_lang_list = ['fr', 'de', 'es', 'it', 'no', 'he', 'la', 'ja', 'cy', 'ar', 'yi', 'zh', 'nl', 'ru', 'fi', 'hi', 'af', 'jw', 'mr', 'ceb', 'cs', 'ga', 'sv', 'eo', 'el', 'ms', 'lv']
-    lang_list = []
-    for __ in range(0, 8):
-        lang_list = get_random_lang(long_lang_list, lang_list)
-    random.shuffle(lang_list)
-    if trigger.group(2) is None:
-        try:
-            phrase = (mangle_lines[trigger.sender.lower()], '')
-        except:
-            bot.reply("What do you want me to mangle?")
-            return
-    else:
-        phrase = (trigger.group(2).strip(), '')
-    if phrase[0] == '':
-        bot.reply("What do you want me to mangle?")
-        return
-    if bot.config.has_section('translate') and bot.config.translate.research:
-        research_logfile = open(os.path.join(bot.config.logdir, 'mangle.log'), 'a')
-        research_logfile.write('Phrase: %s\n' % str(phrase))
-        research_logfile.write('Lang_list: %s\n' % lang_list)
-    for lang in lang_list:
-        backup = phrase
-        try:
-            phrase = translate(phrase[0], 'en', lang)
-        except:
-            phrase = False
-        if not phrase:
-            phrase = backup
-            break
-
-        try:
-            phrase = translate(phrase[0], lang, 'en')
-        except:
-            phrase = backup
-            continue
-
-        if bot.config.has_section('translate') and bot.config.translate.research:
-            research_logfile.write('-> %s\n' % str(phrase))
-        if not phrase:
-            phrase = backup
-            break
-    if bot.config.has_section('translate') and bot.config.translate.research:
-        research_logfile.write('->[FINAL] %s\n' % str(phrase))
-        research_logfile.write('----------------------------\n\n\n')
-        research_logfile.close()
-    bot.reply(phrase[0])
-
-
-@rule('(.*)')
-@priority('low')
-def collect_mangle_lines(bot, trigger):
-    if bot.config.has_section('translate') and bot.config.translate.collect_mangle_lines:
-        global mangle_lines
-        mangle_lines[trigger.sender.lower()] = "%s said '%s'" % (trigger.nick, (trigger.group(0).strip()))
-
-
-if __name__ == "__main__":
-    from willie.test_tools import run_example_tests
-    run_example_tests(__file__)
+@commands('trb', 'bingt', 'microsofttranslator')
+def trb(bot, trigger):
+    """Traduce un texto instantaneamente usando el traductor de Bing"""
+    if not trigger.group(2):
+        return bot.reply('Para usar el traductor ingresa "%trb [idioma origen] [idioma destino] [texto a traducir]"')
+    command = trigger.group(2).split(' ')
+    from_lang = command[0]
+    to_lang = command[1]
+    text = ' '.join(command[2:])
+    bot.reply(translate_bing(text, from_lang, to_lang))

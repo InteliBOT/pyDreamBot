@@ -12,12 +12,12 @@ import willie.web as web
 import willie.module
 
 
-@willie.module.commands('movie', 'imdb')
-@willie.module.example('.movie ThisTitleDoesNotExist', '[MOVIE] Movie not found!')
-@willie.module.example('.movie Citizen Kane', '[MOVIE] Title: Citizen Kane | Year: 1941 | Rating: 8.5 | Genre: Drama, Mystery | IMDB Link: http://imdb.com/title/tt0033467')
+@willie.module.commands('movie', 'imdb', 'pelicula')
+@willie.module.example('%movie Detrás del último no hay nadie', '[PELICULA] Película no encontrada!')
+@willie.module.example('.movie Citizen Kane', '[PELICULA] Title: Citizen Kane | Year: 1941 | Rating: 8.5 | Genre: Drama, Mystery | IMDB Link: http://imdb.com/title/tt0033467')
 def movie(bot, trigger):
     """
-    Returns some information about a movie, like Title, Year, Rating, Genre and IMDB Link.
+    Devuelve información de una película como el título, año de publicación, genero, rating de IMDB
     """
     if not trigger.group(2):
         return
@@ -27,17 +27,17 @@ def movie(bot, trigger):
     data = json.loads(u)  # data is a Dict containing all the information we need
     if data['Response'] == 'False':
         if 'Error' in data:
-            message = '[MOVIE] %s' % data['Error']
+            message = '[PELICULA] %s' % data['Error']
         else:
-            bot.debug(__file__, 'Got an error from the imdb api, search phrase was %s' % word, 'warning')
+            bot.debug(__file__, 'Se obtuvo un error de la API: %s' % word, 'warning')
             bot.debug(__file__, str(data), 'warning')
-            message = '[MOVIE] Got an error from imdbapi'
+            message = '[PELICULA] Hubo un error en la Api de IMDB'
     else:
-        message = '[MOVIE] Title: ' + data['Title'] + \
-                  ' | Year: ' + data['Year'] + \
+        message = '[PELICULA] Título: ' + data['Title'] + \
+                  ' | Año: ' + data['Year'] + \
                   ' | Rating: ' + data['imdbRating'] + \
-                  ' | Genre: ' + data['Genre'] + \
-                  ' | IMDB Link: http://imdb.com/title/' + data['imdbID']
+                  ' | Genero: ' + data['Genre'] + \
+                  ' | Enlace a IMDB: http://imdb.com/title/' + data['imdbID']
     bot.say(message)
 
 

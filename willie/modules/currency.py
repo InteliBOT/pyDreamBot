@@ -21,7 +21,7 @@ base_url = 'http://www.bankofcanada.ca/stats/assets/rates_rss/noon/en_{}.xml'
 regex = re.compile(r'''
     (\d+(?:\.\d+)?)        # Decimal number
     \s*([a-zA-Z]{3})       # 3-letter currency code
-    \s+(?:in|as|of|to)\s+  # preposition
+    \s+(?:in|as|of|to|en|a|de)\s+  # preposition
     ([a-zA-Z]{3})          # 3-letter currency code
     ''', re.VERBOSE)
 
@@ -49,40 +49,40 @@ def get_rate(code):
     return float(rate), name
 
 
-@commands('cur', 'currency', 'exchange')
-@example('.cur 20 EUR in USD')
+@commands('cur', 'currency', 'exchange', 'cambio')
+@example('%cur 20 EUR en USD')
 def exchange(bot, trigger):
-    """Show the exchange rate between two currencies"""
+    """Muestra la taza de cambio de monedas del mundo"""
     if not trigger.group(2):
-        return bot.reply("No search term. An example: .cur 20 EUR in USD")    
+        return bot.reply("No hay nada para buscar, ejemplo: %cur 20 EUR in USD")    
     match = regex.match(trigger.group(2))
     if not match:
         # It's apologetic, because it's using Canadian data.
-        bot.reply("Sorry, I didn't understand the input.")
+        bot.reply("Lo siento, no entiendo esa entrada.")
         return NOLIMIT
 
     amount, of, to = match.groups()
     try:
         amount = float(amount)
     except:
-        bot.reply("Sorry, I didn't understand the input.")
+        bot.reply("Lo siento, no entiendo esa entrada.")
     display(bot, amount, of, to)
 
 def display(bot, amount, of, to):
     if not amount:
-        bot.reply("Zero is zero, no matter what country you're in.")
+        bot.reply("Cero es cero!")
     try:
         of_rate, of_name = get_rate(of)
         if not of_name:
-            bot.reply("Unkown currency: %s" % of)
+            bot.reply("Moneda desconocida: %s" % of)
             return
         to_rate, to_name = get_rate(to)
         if not to_name:
-            bot.reply("Unkown currency: %s" % to)
+            bot.reply("Moneda desconocida: %s" % to)
             return
     except Exception as e:
         raise
-        bot.reply("Something went wrong while I was getting the exchange rate.")
+        bot.reply("Algo ha pasado, y no pude obtener información actualizada")
         return NOLIMIT
 
     result = amount / of_rate * to_rate
@@ -91,7 +91,7 @@ def display(bot, amount, of, to):
 
 
 @commands('btc', 'bitcoin')
-@example('.btc 20 EUR')
+@example('%btc 20 EUR')
 def bitcoin(bot, trigger):
     #if 2 args, 1st is number and 2nd is currency. If 1 arg, it's either the number or the currency.
     to = trigger.group(4)
@@ -103,7 +103,7 @@ def bitcoin(bot, trigger):
     try:
         amount = float(amount)
     except:
-        bot.reply("Sorry, I didn't understand the input.")
+        bot.reply("Lo siento, no entiendo esa entrada")
         return NOLIMIT
 
     display(bot, amount, 'BTC', to)

@@ -34,14 +34,14 @@ def setup(bot):
         bot.db.preferences.add_columns(['time_format'])
 
 
-@commands('t', 'time')
+@commands('t', 'time', 'hora')
 @example('.t America/New_York')
 def f_time(bot, trigger):
-    """Returns the current time."""
+    """Da la hora actual en alguna zona horaria."""
     if trigger.group(2):
         zone = get_timezone(bot.db, bot.config, trigger.group(2).strip(), None, None)
         if not zone:
-            bot.say('Could not find timezone %s.' % trigger.group(2).strip())
+            bot.say('No se ha encontrado la zona horaria %s.' % trigger.group(2).strip())
             return
     else:
         zone = get_timezone(bot.db, bot.config, None, trigger.nick,
@@ -50,49 +50,48 @@ def f_time(bot, trigger):
     bot.say(time)
 
 
-@commands('settz')
+@commands('settz', 'timez')
 @example('.settz America/New_York')
 def update_user(bot, trigger):
     """
-    Set your preferred time zone. Most timezones will work, but it's best to
-    use one from http://dft.ba/-tz
+    Cambia tu zona horaria predeterminada. Ejemplos y más en: http://dft.ba/-tz
     """
     if not pytz:
-        bot.reply("Sorry, I don't have timezone support installed.")
+        bot.reply("Lo siento, no tengo soporte para zonas horarias.")
     elif not bot.db:
-        bot.reply("I can't remember that; I don't have a database.")
+        bot.reply("No puedo recordar eso, no tengo base de datos.")
     else:
         tz = trigger.group(2)
         if not tz:
-            bot.reply("What timezone do you want to set? Try one from "
+            bot.reply("Que zona horaria uso? En el siguiente sitio hay varias "
                          "http://dft.ba/-tz")
             return
         if tz not in pytz.all_timezones:
-            bot.reply("I don't know that time zone. Try one from "
+            bot.reply("No conozco esa zona horaria, busca una en "
                          "http://dft.ba/-tz")
             return
 
         bot.db.preferences.update(trigger.nick, {'tz': tz})
         if len(tz) < 7:
             bot.say("Okay, " + trigger.nick +
-                        ", but you should use one from http://dft.ba/-tz if "
-                        "you use DST.")
+                        ", pero necesito una zona horaria de http://dft.ba/-tz si "
+                        "usas DST.")
         else:
-            bot.reply('I now have you in the %s time zone.' % tz)
+            bot.reply('Ahora estás en la zona horaria %s, genial!' % tz)
 
 
-@commands('settimeformat', 'settf')
+@commands('settimeformat', 'settf', 'fzh', 'formatozonahoraria')
 @example('.settf %FT%T%z')
 def update_user_format(bot, trigger):
     """
-    Sets your preferred format for time. Uses the standard strftime format. You
-    can use http://strftime.net or your favorite search engine to learn more.
+    Establece el formato de fecha y hora de un usuario. Puedes buscar uno de tu preferencia en http://strftime.net o en
+    cualquier motor de búsqueda.
     """
     if bot.db:
         tformat = trigger.group(2)
         if not tformat:
-            bot.reply("What format do you want me to use? Try using"
-                         " http://strftime.net to make one.")
+            bot.reply("Que formato de zona horaria deseas utilizar?"
+                         " Entra a http://strftime.net para crear uno.")
 
         tz = get_timezone(bot.db, bot.config, None, None,
                                        trigger.sender)
@@ -106,49 +105,49 @@ def update_user_format(bot, trigger):
         try:
             timef = format_time(db = bot.db, zone=tz, nick=trigger.nick)
         except:
-            bot.reply("That format doesn't work. Try using"
-                         " http://strftime.net to make one.")
+            bot.reply("Ese formato no es válido. Entra a"
+                         " http://strftime.net para crear uno.")
             # New format doesn't work. Revert save in database.
             bot.db.preferences.update(trigger.nick, {'time_format': old_format})
             return
-        bot.reply("Got it. Your time will now appear as %s. (If the "
-                     "timezone is wrong, you might try the settz command)"
+        bot.reply("Fantástico!. Tu hora ahora se mostrará como %s. (Si tu "
+                     "zona horaria es incorrecta, puedes cambiarla con el comando timez)"
                      % timef)
     else:
-        bot.reply("I can't remember that; I don't have a database.")
+        bot.reply("No puedo recordar eso! no tengo base de datos :/")
 
 
 @commands('channeltz')
 @example('.chantz America/New_York')
 def update_channel(bot, trigger):
     """
-    Set the preferred time zone for the channel.
+    Establece la zona horaria preferida para el canal
     """
     if bot.privileges[trigger.sender][trigger.nick] < OP:
         return
     elif not pytz:
-        bot.reply("Sorry, I don't have timezone support installed.")
+        bot.reply("No tengo soporte para zonas horarias activado, lo siento.")
     elif not bot.db:
-        bot.reply("I can't remember that; I don't have a database.")
+        bot.reply("No puedo recordar eso, no tengo base de datos.")
     else:
         tz = trigger.group(2)
         if not tz:
-            bot.reply("What timezone do you want to set? Try one from "
+            bot.reply("Que zona horaria deseas establecer? Puedes buscar una en "
                          "http://dft.ba/-tz")
             return
         if tz not in pytz.all_timezones:
-            bot.reply("I don't know that time zone. Try one from "
+            bot.reply("No conozco esa zona horaria, busca una en "
                          "http://dft.ba/-tz")
             return
 
         bot.db.preferences.update(trigger.sender, {'tz': tz})
         if len(tz) < 7:
             bot.say("Okay, " + trigger.nick +
-                        ", but you should use one from http://dft.ba/-tz if "
-                        "you use DST.")
+                        ", pero debes colocar una zona horaria de http://dft.ba/-tz si "
+                        "usas DST.")
         else:
             bot.reply(
-                'I now have {} in the {} time zone.'.format(trigger.sender,tz))
+                'Ahora tengo a {} en la zona horaria {}.'.format(trigger.sender,tz))
 
 
 @commands('setchanneltimeformat', 'setctf')
