@@ -13,3 +13,5 @@ script:
   - coverage report --show-missing
 after_success:
   - coveralls
+notifications:
+  irc: "chat.freenode.net#dreambot"
