@@ -30,13 +30,13 @@ def configure(config):
     """
     if config.option('Enable bing', False):
         config.add_section('translate')
-            config.interactive_add('translate', 'bing_user', 'Bing Api user', 'bing')
-            config.interactive_add('translate', 'bing_pass', 'Bing Api password', 'cakeisalie')
-def translate_bing(text, in_lang, out_lang):
+        config.interactive_add('translate', 'bing_user', 'Bing Api user', 'bing')
+        config.interactive_add('translate', 'bing_pass', 'Bing Api password', 'cakeisalie')
+def translate_bing(text, in_lang, out_lang, bot):
     if not bot.config.has_option('translate', 'bing_user') or not bot.config.has_option('translate', 'bing_pass'):
         return 'No se ha habilitado el uso de bing en este bot!'
     else:
-        user = bot.config.translate.default_lang
+        user = bot.config.translate.bing_user
         password = bot.config.translate.bing_pass
     translator = Translator(user, password)
     if in_lang == 'auto':
@@ -126,4 +126,4 @@ def trb(bot, trigger):
     from_lang = command[0]
     to_lang = command[1]
     text = ' '.join(command[2:])
-    bot.reply(translate_bing(text, from_lang, to_lang))
+    bot.reply(translate_bing(text, from_lang, to_lang, bot))
