@@ -5,3 +5,5 @@ pygeoip
 praw
 feedparser
 pyenchant
+opensearch
+microsofttranslator
