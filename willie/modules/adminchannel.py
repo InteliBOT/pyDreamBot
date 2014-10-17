@@ -194,8 +194,7 @@ def unban(bot, trigger):
 @commands('quiet')
 def quiet(bot, trigger):
     """
-    This gives admins the ability to quiet a user.
-    The bot must be a Channel Operator for this command to work.
+    Añade un silencio a un usuario o máscara
     """
     if bot.privileges[trigger.sender][trigger.nick] < OP:
         return
@@ -221,9 +220,8 @@ def quiet(bot, trigger):
 
 @commands('unquiet')
 def unquiet(bot, trigger):
-    """
-   This gives admins the ability to unquiet a user.
-   The bot must be a Channel Operator for this command to work.
+   """
+   Quita el silencio de un usuario o máscara
    """
     if bot.privileges[trigger.sender][trigger.nick] < OP:
         return
@@ -250,10 +248,9 @@ def unquiet(bot, trigger):
 @commands('kickban', 'kb')
 @priority('high')
 def kickban(bot, trigger):
-    """
-   This gives admins the ability to kickban a user.
-   The bot must be a Channel Operator for this command to work.
-   .kickban [#chan] user1 user!*@* get out of here
+   """
+   Echa y veta a un usuario o máscara
+   %kickban [#chan] user1 user!*@* fuera de aquí
    """
     if bot.privileges[trigger.sender][trigger.nick] < OP:
         return

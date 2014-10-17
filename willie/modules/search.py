@@ -55,29 +55,29 @@ def formatnumber(n):
 
 
 @commands('g', 'google')
-@example('.g swhack')
+@example('%google jabón')
 def g(bot, trigger):
-    """Queries Google for the specified input."""
+    """Busca por resultados en Google."""
     query = trigger.group(2)
     if not query:
-        return bot.reply('.g what?')
+        return bot.reply('¿Que deseas que Googlee?')
     uri = google_search(query)
     if uri:
         bot.reply(uri)
-        bot.memory['last_seen_url'][trigger.sender] = uri
+        #bot.memory['last_seen_url'][trigger.sender] = uri
     elif uri is False:
-        bot.reply("Problem getting data from Google.")
+        bot.reply("Ha ocurrido un error mientras se buscaban resultados.")
     else:
-        bot.reply("No results found for '%s'." % query)
+        bot.reply("No se han encontrado resultados para '%s'." % query)
 
 
-@commands('gc')
-@example('.gc extrapolate')
+@commands('gc', 'googlec')
+@example('%gc extrapolate')
 def gc(bot, trigger):
-    """Returns the number of Google results for the specified input."""
+    """Devuelve el número de resultados de una búsqueda en Google."""
     query = trigger.group(2)
     if not query:
-        return bot.reply('.gc what?')
+        return bot.reply('¿Contar resultados de que?')
     num = formatnumber(google_count(query))
     bot.say(query + ': ' + num)
 
@@ -87,14 +87,14 @@ r_query = re.compile(
 
 
 @commands('gcs', 'comp')
-@example('.gcs foo bar')
+@example('%gcs hola mundo')
 def gcs(bot, trigger):
-    """Compare the number of Google search results"""
+    """Compara el número de resultados de búsqueda"""
     if not trigger.group(2):
-        return bot.reply("Nothing to compare.")
+        return bot.reply("No hay nada a comparar. Ayuda: %help gcs")
     queries = r_query.findall(trigger.group(2))
     if len(queries) > 6:
-        return bot.reply('Sorry, can only compare up to six things.')
+        return bot.reply('Lo siento, solo puedo comparar 6 cosas.')
 
     results = []
     for i, query in enumerate(queries):
@@ -113,7 +113,7 @@ def gcs(bot, trigger):
 r_bing = re.compile(r'<h3><a href="([^"]+)"')
 
 
-def bing_search(query, lang='en-GB'):
+def bing_search(query, lang='es-ES'):
     base = 'http://www.bing.com/search?mkt=%s&q=' % lang
     bytes = web.get(base + query)
     m = r_bing.search(bytes)
@@ -147,12 +147,12 @@ def duck_api(query):
 
 
 @commands('duck', 'ddg')
-@example('.duck privacy or .duck !mcwiki obsidian')
+@example('%duck privacidad o %duck !mcwiki obsidiana')
 def duck(bot, trigger):
-    """Queries Duck Duck Go for the specified input."""
+    """Busca en Duck Duck Go! un resultado."""
     query = trigger.group(2)
     if not query:
-        return bot.reply('.ddg what?')
+        return bot.reply('¿Qué buscar protegiendo tu privacidad?')
 
     #If the API gives us something, say it and stop
     result = duck_api(query)
@@ -165,51 +165,51 @@ def duck(bot, trigger):
 
     if uri:
         bot.reply(uri)
-        bot.memory['last_seen_url'][trigger.sender] = uri
+        #bot.memory['last_seen_url'][trigger.sender] = uri
     else:
-        bot.reply("No results found for '%s'." % query)
+        bot.reply("No hay resultados para '%s'." % query)
 
 
-@commands('search')
-@example('.search nerdfighter')
+@commands('search', 'buscar')
+@example('%search DreamBot GitHub')
 def search(bot, trigger):
-    """Searches Google, Bing, and Duck Duck Go."""
+    """Busca en Google, Bing, and Duck Duck Go!"""
     if not trigger.group(2):
-        return bot.reply('.search for what?')
+        return bot.reply('¿Que hay que buscar amigo?')
     query = trigger.group(2)
     gu = google_search(query) or '-'
     bu = bing_search(query) or '-'
     du = duck_search(query) or '-'
 
     if (gu == bu) and (bu == du):
-        result = '%s (g, b, d)' % gu
+        result = '%s (Google, Bing, Duck)' % gu
     elif (gu == bu):
-        result = '%s (g, b), %s (d)' % (gu, du)
+        result = '%s (Google, Bing), %s (Duck)' % (gu, du)
     elif (bu == du):
-        result = '%s (b, d), %s (g)' % (bu, gu)
+        result = '%s (Bing, Duck), %s (Google)' % (bu, gu)
     elif (gu == du):
-        result = '%s (g, d), %s (b)' % (gu, bu)
+        result = '%s (Google, Duck), %s (Bing)' % (gu, bu)
     else:
-        if len(gu) > 250:
-            gu = '(extremely long link)'
+        if len(gu) > 200:
+            gu = '(enlace demasiado largo)'
         if len(bu) > 150:
-            bu = '(extremely long link)'
+            bu = '(enlace demasiado largo)'
         if len(du) > 150:
-            du = '(extremely long link)'
-        result = '%s (g), %s (b), %s (d)' % (gu, bu, du)
+            du = '(enlace demasiado largo)'
+        result = '%s (Google), %s (Bing), %s (Duck)' % (gu, bu, du)
 
     bot.reply(result)
 
 
-@commands('suggest')
+@commands('suggest', 'autocomplementar', 'autotab')
 def suggest(bot, trigger):
-    """Suggest terms starting with given input"""
+    """Autocomplementa alguna frase especificada."""
     if not trigger.group(2):
-        return bot.reply("No query term.")
+        return bot.reply("No hay nada por buscar.")
     query = trigger.group(2)
     uri = 'http://websitedev.de/temp-bin/suggest.pl?q='
-    answer = web.get(uri+query.replace('+', '%2B'))
+    answer = web.get(uri+query.replace('+', '%2B')).replace('Perhaps', 'Resultados para')
     if answer:
         bot.say(answer)
     else:
-        bot.reply('Sorry, no result.')
+        bot.reply('Lo siento, no encontré nada.')

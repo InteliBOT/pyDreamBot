@@ -29,12 +29,12 @@ def setup(bot):
 
 @rule('.*%s.*' % post_url)
 def rpost_info(bot, trigger, match=None):
-    r = praw.Reddit(user_agent='Willie IRC bot - see dft.ba/-williesource for more')
+    r = praw.Reddit(user_agent='DreamBot linker - IRC thread')
     match = match or trigger
     s = r.get_submission(url=match.group(1))
 
-    message = ('[REDDIT] {title} {link}{nsfw} | {points} points ({percent}) | '
-               '{comments} comments | Posted by {author}')
+    message = ('[REDDIT] {title} {link}{nsfw} | {points} puntos ({percent}) | '
+               '{comments} comentarios | Publicado por {author}')
 
     if s.is_self:
         link = '(self.{})'.format(s.subreddit.display_name)
@@ -50,7 +50,7 @@ def rpost_info(bot, trigger, match=None):
     if s.author:
         author = s.author.name
     else:
-        author = '[deleted]'
+        author = '[eliminado]'
     #TODO add creation time with s.created
 
     if s.score > 0:
@@ -69,15 +69,15 @@ def rpost_info(bot, trigger, match=None):
 #If you change this, you'll have to change some other things...
 @commands('redditor')
 def redditor_info(bot, trigger, match=None):
-    """Show information about the given Redditor"""
+    """Muestra información de un usuario de Reddit"""
     commanded = re.match(bot.config.prefix + 'redditor', trigger)
-    r = praw.Reddit(user_agent='phenny / willie IRC bot - see dft.ba/-williesource for more')
+    r = praw.Reddit(user_agent='DreamBot client linker - IRC thread')
     match = match or trigger
     try:
         u = r.get_redditor(match.group(2))
     except:
         if commanded:
-            bot.say('No such Redditor.')
+            bot.say('Redditor no encontrado.')
             return NOLIMIT
         else:
             return
