@@ -58,7 +58,7 @@ def main(argv=None):
     global homedir
     # Step One: Parse The Command Line
     try:
-        parser = argparse.ArgumentParser(description='Willie IRC Bot',
+        parser = argparse.ArgumentParser(description='DreamBot, a IRC Bot',
                                          usage='%(prog)s [options]')
         parser.add_argument('-c', '--config', metavar='filename',
                             help='use a specific configuration file')

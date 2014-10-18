@@ -220,9 +220,9 @@ def quiet(bot, trigger):
 
 @commands('unquiet')
 def unquiet(bot, trigger):
-   """
-   Quita el silencio de un usuario o máscara
-   """
+    """
+    Quita el silencio de un usuario o máscara
+    """
     if bot.privileges[trigger.sender][trigger.nick] < OP:
         return
     if bot.privileges[trigger.sender][bot.nick] < OP:
@@ -248,10 +248,10 @@ def unquiet(bot, trigger):
 @commands('kickban', 'kb')
 @priority('high')
 def kickban(bot, trigger):
-   """
-   Echa y veta a un usuario o máscara
-   %kickban [#chan] user1 user!*@* fuera de aquí
-   """
+    """
+    Echa y veta a un usuario o máscara
+    %kickban [#chan] user1 user!*@* fuera de aquí
+    """
     if bot.privileges[trigger.sender][trigger.nick] < OP:
         return
     if bot.privileges[trigger.sender][bot.nick] < HALFOP:
