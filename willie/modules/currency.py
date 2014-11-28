@@ -13,7 +13,7 @@ import re
 
 from willie import web
 from willie.module import commands, example, NOLIMIT
-
+import json
 
 # The Canadian central bank has better exchange rate data than the Fed, the
 # Bank of England, or the European Central Bank. Who knew?
@@ -28,10 +28,10 @@ regex = re.compile(r'''
 
 def get_rate(code):
     if code == 'CAD':
-        return 1, 'Canadian Dollar'
+        return 1, 'Dolar canadience'
     elif code == 'BTC':
         rates = json.loads(web.get('https://api.bitcoinaverage.com/ticker/all'))
-        return 1 / rates['CAD']['24h_avg'], 'Bitcoin—24hr average'
+        return 1 / rates['CAD']['24h_avg'], 'Bitcoin 24h'
 
     data, headers = web.get(base_url.format(code), dont_decode=True, return_headers=True)
     if headers['_http_status'] == 404:
@@ -39,8 +39,10 @@ def get_rate(code):
     xml = etree.fromstring(data)
     namestring = xml.find('{http://purl.org/rss/1.0/}channel/'
                           '{http://purl.org/rss/1.0/}title').text
-    name = namestring[len('Bank of Canada noon rate: '):]
-    name = re.sub(r'\s*\(noon\)\s*', '', name)
+    #name = namestring[len('Bank of Canada noon rate: '):]
+    #name = re.sub(r'\s*\(noon\)\s*', '', name)
+    metajson = json.loads(open("willie/modules/json/iso4217.json").read())
+    name = metajson[code]
     rate = xml.find(
         '{http://purl.org/rss/1.0/}item/'
         '{http://www.cbwiki.net/wiki/index.php/Specification_1.1}statistics/'
@@ -49,7 +51,7 @@ def get_rate(code):
     return float(rate), name
 
 
-@commands('cur', 'currency', 'exchange', 'cambio')
+@commands('cur', 'currency', 'exchange', 'cambio', 'moneda')
 @example('%cur 20 EUR en USD')
 def exchange(bot, trigger):
     """Muestra la taza de cambio de monedas del mundo"""
@@ -69,6 +71,8 @@ def exchange(bot, trigger):
     display(bot, amount, of, to)
 
 def display(bot, amount, of, to):
+    of = of.upper()
+    to = to.upper()
     if not amount:
         bot.reply("Cero es cero!")
     try:

@@ -86,27 +86,27 @@ def _find_geoip_db(bot):
 
 
 @commands('iplookup', 'ip')
-@example('.ip 8.8.8.8',
+@example('%ip 8.8.8.8',
         r'[IP/Host Lookup] Hostname: google-public-dns-a.google.com | Location: United States | ISP: Google Inc.',
         re=True, 
         ignore='Downloading GeoIP database, please wait...')
 def ip(bot, trigger):
-    """IP Lookup tool"""
+    """Herramienta de geolocalización de IPs"""
     if not trigger.group(2):
-        return bot.reply("No search term.")
+        return bot.reply("No hay nada a buscar.")
     query = trigger.group(2)
     db_path = _find_geoip_db(bot)
     if db_path is False:
-        bot.debug(__file__, 'Can\'t find (or download) usable GeoIP database', 'always')
-        bot.say('Sorry, I don\'t have a GeoIP database to use for this lookup')
+        bot.debug(__file__, 'No se pudo encontrar una base de datos para esta IP', 'always')
+        bot.say('Lo siento, no se pudo encontrar una base de datos para esta IP')
         return False
     geolite_city_filepath = os.path.join(_find_geoip_db(bot), 'GeoLiteCity.dat')
     geolite_ASN_filepath = os.path.join(_find_geoip_db(bot), 'GeoIPASNum.dat')
     gi_city = pygeoip.GeoIP(geolite_city_filepath)
     gi_org = pygeoip.GeoIP(geolite_ASN_filepath)
     host = socket.getfqdn(query)
-    response = "[IP/Host Lookup] Hostname: %s" % host
-    response += " | Location: %s" % gi_city.country_name_by_name(query)
+    response = "[Geolocalización IP/Host] Nombre del host: %s" % host
+    response += " | Ubicación: %s" % gi_city.country_name_by_name(query)
     
     region_data = gi_city.region_by_name(query)
     try:
@@ -114,7 +114,7 @@ def ip(bot, trigger):
     except KeyError:
         region = region_data['region_name']  # pygeoip < 0.3.0
     if region:
-        response += " | Region: %s" % region
+        response += " | Región: %s" % region
     
     isp = gi_org.org_by_name(query)
     if isp is not None:

@@ -3,8 +3,10 @@
 rae.py - Willie Real Academia española dictionary Module
 Author: Miguel Peláez Tamayo
 """
-
 from __future__ import unicode_literals
+import sys
+reload(sys)
+sys.setdefaultencoding("utf-8")
 import willie.module
 from opensearch import Client
 
@@ -26,7 +28,7 @@ def define(bot, trigger):
             max = max + 1
             if result.title == word:
                 output = result.summary
-                url = result.link
+                url = 'http://lema.rae.es/drae/srv/search?val='+word
             elif max > 3:
                 break
         if output:

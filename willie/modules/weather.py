@@ -14,7 +14,7 @@ from willie.module import commands, example, NOLIMIT
 
 import feedparser
 from lxml import etree
-
+import json
 
 def setup(bot):
     # Having a db means pref's exists. Later, we can just use `if bot.db`.
@@ -127,9 +127,9 @@ def get_wind(parsed):
 
 
 @commands('weather', 'wea')
-@example('.weather London')
+@example('%weather London')
 def weather(bot, trigger):
-    """.weather location - Show the weather at the given location."""
+    """%weather lugar - Muestra el clima en la ubicación dada."""
 
     location = trigger.group(2)
     woeid = ''
@@ -137,8 +137,8 @@ def weather(bot, trigger):
         if bot.db and trigger.nick in bot.db.preferences:
             woeid = bot.db.preferences.get(trigger.nick, 'woeid')
         if not woeid:
-            return bot.msg(trigger.sender, "I don't know where you live. " +
-                           'Give me a location, like .weather London, or tell me where you live by saying .setlocation London, for example.')
+            return bot.msg(trigger.sender, "No sé donde vives. " +
+                           'Escribe una ubicación como %weather London, o dí donde vives con %setlocation London, por ejemplo.')
     else:
         location = location.strip()
         if bot.db and location in bot.db.preferences:
@@ -149,7 +149,7 @@ def weather(bot, trigger):
                 woeid = first_result.find('woeid').text
 
     if not woeid:
-        return bot.reply("I don't know where that is.")
+        return bot.reply("No sé donde queda eso")
 
     query = web.urlencode({'w': woeid, 'u': 'c'})
     url = 'http://weather.yahooapis.com/forecastrss?' + query
@@ -164,7 +164,7 @@ def weather(bot, trigger):
 
 
 @commands('setlocation', 'setwoeid')
-@example('.setlocation Columbus, OH')
+@example('%setlocation Columbus, OH')
 def update_woeid(bot, trigger):
     """Set your default weather location."""
     if not trigger.group(2):

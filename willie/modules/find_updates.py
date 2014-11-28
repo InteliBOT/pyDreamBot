@@ -21,7 +21,7 @@ wait_time = 24 * 60 * 60  # check once per day
 startup_check_run = False
 version_url = 'http://willie.dftba.net/latest.json'
 message = (
-    'A new Willie version, {}, is available. I am running {}. Please update ' +
+    'La nueva versión de DreamBot {}, está disponible. Estoy ejecutando la {}. Por favor actualizame :) ' +
     'me. Full release notes at {}.'
 )
 

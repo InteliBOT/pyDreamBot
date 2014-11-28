@@ -10,10 +10,10 @@ import random
 from willie.module import rule, priority, thread, commands
 
 
-@rule(r'(?i)(hi|hello|hey) $nickname[ \t]*$')
+@rule(r'(?i)(hi|hello|hey|hola|buenas|hey)[,]? $nickname[ \t]*$')
 def hello(bot, trigger):
     if trigger.owner:
-        greeting = random.choice(('No sé quien eres', 'No me has programado bien, error 404', 'Tu no me amas, me cambiaste por Trivial-Bot'))
+        greeting = random.choice(('No sé quien eres', 'No me has programado bien, error 404', 'Tú no me amas, me cambiaste por Trivial-Bot'))
     else:
         greeting = random.choice(('Hola', 'Hey', 'Buenas'))
     punctuation = random.choice(('', '!'))

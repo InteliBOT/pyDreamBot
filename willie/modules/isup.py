@@ -17,21 +17,21 @@ def isup(bot, trigger):
     """isup.me website status checker"""
     site = trigger.group(2)
     if not site:
-        return bot.reply("What site do you want to check?")
+        return bot.reply("¿Que sitio web debo verificar?")
 
     if site[:6] != 'http://' and site[:7] != 'https://':
         if '://' in site:
             protocol = site.split('://')[0] + '://'
-            return bot.reply("Try it again without the %s" % protocol)
+            return bot.reply("Intenta de nuevo sin el %s" % protocol)
         else:
             site = 'http://' + site
     try:
         response = web.get(site)
     except Exception:
-        bot.say(site + ' looks down from here.')
+        bot.say(site + ' parece caído desde aquí.')
         return
 
     if response:
-        bot.say(site + ' looks fine to me.')
+        bot.say(site + ' está vivo desde aquí.')
     else:
-        bot.say(site + ' is down from here.')
+        bot.say(site + ' parece caído desde aquí.')

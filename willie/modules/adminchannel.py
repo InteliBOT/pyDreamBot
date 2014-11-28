@@ -12,7 +12,7 @@ from __future__ import unicode_literals
 
 import re
 from willie.module import commands, priority, OP, HALFOP
-from willie.tools import Nick
+from willie.tools import Nick, get_hostmask_regex
 
 
 def setup(bot):
@@ -343,3 +343,16 @@ def show_mask(bot, trigger):
         bot.say(bot.db.preferences.get(trigger.sender.lower(), 'topic_mask'))
     else:
         bot.say("%s")
+@commands('kickbanb')
+def kickban_beta(bot, trigger):
+    text = trigger.group(2).split(' ')
+    nick = text[0]
+    users = bot.privileges[trigger.sender]
+    #for nick in users:
+        #kicklist += if_kick(nick, mask)
+    bot.say(' '.join(users))
+    #bot.say(trigger.sender)
+
+def if_kick(nick, mask):
+    get_hostmask_regex(mask)
+    
